@@ -1,0 +1,13 @@
+spring:
+  config:
+    import: "optional:configserver:"
+  application:
+    name: "OnlineMovieStorePayment"
+
+eureka:
+  client:
+    healthcheck:
+      enabled: false
+server:
+  port: 8084
+  servlet.contextPath: /api/payments

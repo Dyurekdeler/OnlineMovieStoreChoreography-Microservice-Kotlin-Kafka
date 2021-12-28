@@ -1,0 +1,13 @@
+spring:
+  config:
+    import: "optional:configserver:"
+  application:
+    name: "OnlineMovieStoreDelivery"
+
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+server:
+  port: 8085
+  servlet.contextPath: /api/deliveries

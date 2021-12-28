@@ -1,0 +1,38 @@
+spring:
+  config:
+    import: "optional:configserver:"
+  application:
+    name: "OnlineMovieStoreOrder"
+
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+
+server:
+  port: 8081
+  servlet.contextPath: /api/orders
+
+OnlineMovieStore:
+  server:
+    customer:
+      url: "http://localhost:8082/api/customers"
+      ws:
+        getCustomer: /{id}
+
+    inventory:
+      url: "http://localhost:8080/api/movies"
+      ws:
+        getMovie: /{id}
+        updateMovie: /{id}
+
+    payment:
+      url: "http://localhost:8084/api/payments"
+      ws:
+        createPayment: /
+        updatePayment: /{id}
+
+    delivery:
+      url: "http://localhost:8085/api/deliveries"
+      ws:
+        createDelivery: /
