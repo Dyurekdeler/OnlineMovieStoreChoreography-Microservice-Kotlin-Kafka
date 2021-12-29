@@ -1,5 +1,6 @@
 package com.dyurekdeler.OnlineMovieStoreOrder.request
 
+import com.dyurekdeler.OnlineMovieStoreOrder.model.OrderStatus
 import com.dyurekdeler.OnlineMovieStoreOrder.model.PaymentMethod
 
 class OrderRequest (
@@ -7,5 +8,5 @@ class OrderRequest (
     val customerId: String,
     val quantity: Int,
     val paymentMethod: PaymentMethod,
-    var isCancelled: Boolean
+    var status: OrderStatus
 )

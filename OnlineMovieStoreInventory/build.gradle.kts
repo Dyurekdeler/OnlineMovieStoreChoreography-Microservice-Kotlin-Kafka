@@ -32,7 +32,9 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.0")
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
 	implementation("org.springframework.boot:spring-boot-starter-actuator:2.6.1")
-
+	// kafka
+	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.springframework.kafka:spring-kafka")
 
 }
 

@@ -51,19 +51,4 @@ class PaymentService(
         paymentRepository.delete(paymentToDelete)
     }
 
-
-    fun kafkaListener() {
-        // orderdan bir mesak geldi
-        // procees metodunu çalıştırdı
-    }
-
-    fun processCheorogyPayment(request: PaymentRequest) {
-        // try
-            // logic işlem
-        // catch
-            // hata topic'ine msj at
-
-        // inventory topic msj inventory devam etsin
-    }
-
 }

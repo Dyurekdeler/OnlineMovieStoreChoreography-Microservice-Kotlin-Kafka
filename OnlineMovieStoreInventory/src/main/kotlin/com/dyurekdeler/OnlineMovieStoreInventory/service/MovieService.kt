@@ -40,7 +40,6 @@ class MovieService(
                 duration = request.duration
                 about = request.about
                 quantity = request.quantity
-                modifiedDate = LocalDateTime.now()
             }
         )
         return updatedMovie

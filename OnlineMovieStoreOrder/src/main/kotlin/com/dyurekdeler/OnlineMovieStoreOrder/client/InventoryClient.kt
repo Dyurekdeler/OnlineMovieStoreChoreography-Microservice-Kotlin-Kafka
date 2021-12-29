@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 interface InventoryClient {
 
     @GetMapping("\${OnlineMovieStore.server.inventory.ws.getMovie}")
-    fun getMovie(@PathVariable id: String): Movie
+    fun getMovie(@PathVariable id: String): Movie?
 
     @PutMapping("\${OnlineMovieStore.server.inventory.ws.updateMovie}")
     fun updateMovie(@PathVariable id: String, @RequestBody request: MovieRequest): Movie
