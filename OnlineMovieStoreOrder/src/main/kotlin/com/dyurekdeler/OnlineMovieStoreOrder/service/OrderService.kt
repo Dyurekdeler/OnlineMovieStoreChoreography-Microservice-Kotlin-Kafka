@@ -8,6 +8,7 @@ import com.dyurekdeler.OnlineMovieStoreOrder.client.InventoryClient
 import com.dyurekdeler.OnlineMovieStoreOrder.client.PaymentClient
 import com.dyurekdeler.OnlineMovieStoreOrder.entity.Order
 import com.dyurekdeler.OnlineMovieStoreOrder.model.*
+import com.dyurekdeler.OnlineMovieStoreOrder.model.kafka.OrderMessage
 import com.dyurekdeler.OnlineMovieStoreOrder.repository.OrderRepository
 import com.dyurekdeler.OnlineMovieStoreOrder.request.MovieRequest
 import com.dyurekdeler.OnlineMovieStoreOrder.request.OrderRequest
@@ -21,7 +22,8 @@ class OrderService(
     private val customerClient: CustomerClient,
     private val inventoryClient: InventoryClient,
     private val paymentClient: PaymentClient,
-    private val deliveryClient: DeliveryClient
+    private val deliveryClient: DeliveryClient,
+    private val kafkaService: KafkaService
 
 ) {
 
@@ -71,8 +73,7 @@ class OrderService(
             if (movie.quantity < request.quantity) throw Exception("Movie has not enough quantity!")
 
             // insert order
-            val order = createOrder(request)
-            logger.info(">> Inserting order. Order: $order")
+            val order = insertOrder(request)
 
             // get payment
             val payment: Payment
@@ -124,6 +125,18 @@ class OrderService(
 
         } ?: throw Exception("Customer not found!")
 
+    }
+
+    fun insertOrder(request: OrderRequest): Order {
+        val order = createOrder(request)
+        logger.info(">> Inserting order. Order: $order")
+        val orderMessage = OrderMessage(
+            isFailed = true,
+            order = order
+        )
+        kafkaService.postOrderMessage(orderMessage)
+        logger.info(">> Kafka message is sent")
+        return order
     }
 
     fun cancelOrder(order: Order): Order {
