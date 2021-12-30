@@ -1,16 +1,11 @@
 package com.dyurekdeler.OnlineMovieStoreOrder.service
 
-import com.dyurekdeler.OnlineMovieStoreCustomer.request.PaymentRequest
-import com.dyurekdeler.OnlineMovieStoreInventory.request.DeliveryRequest
 import com.dyurekdeler.OnlineMovieStoreOrder.client.CustomerClient
-import com.dyurekdeler.OnlineMovieStoreOrder.client.DeliveryClient
 import com.dyurekdeler.OnlineMovieStoreOrder.client.InventoryClient
-import com.dyurekdeler.OnlineMovieStoreOrder.client.PaymentClient
 import com.dyurekdeler.OnlineMovieStoreOrder.entity.Order
 import com.dyurekdeler.OnlineMovieStoreOrder.model.*
 import com.dyurekdeler.OnlineMovieStoreOrder.model.kafka.OrderCreatedEvent
 import com.dyurekdeler.OnlineMovieStoreOrder.repository.OrderRepository
-import com.dyurekdeler.OnlineMovieStoreOrder.request.MovieRequest
 import com.dyurekdeler.OnlineMovieStoreOrder.request.OrderRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -52,6 +47,16 @@ class OrderService(
             orderToUpdate.apply {
                 quantity = request.quantity
                 status = request.status
+            }
+        )
+        return updatedOrder
+    }
+
+    fun updateOrderStatus(id: String, orderStatus: OrderStatus): Order {
+        val orderToUpdate = findById(id)
+        val updatedOrder = orderRepository.save(
+            orderToUpdate.apply {
+                status = orderStatus
             }
         )
         return updatedOrder

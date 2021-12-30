@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PaymentRepository: MongoRepository<Payment, String> {
+    fun findByOrderId(id: String): Payment
 }

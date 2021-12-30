@@ -46,6 +46,16 @@ class PaymentService(
         return updatedPayment
     }
 
+    fun updatePaymentStatus(id: String, isCancelled: Boolean): Payment {
+        val paymentToUpdate = findById(id)
+        val updatedPayment = paymentRepository.save(
+            paymentToUpdate.apply {
+                this.isCancelled = isCancelled
+            }
+        )
+        return updatedPayment
+    }
+
     fun deleteById(id:String) {
         val paymentToDelete = findById(id)
         paymentRepository.delete(paymentToDelete)

@@ -3,7 +3,6 @@ package com.dyurekdeler.OnlineMovieStoreOrder.entity
 import com.dyurekdeler.OnlineMovieStoreOrder.model.Customer
 import com.dyurekdeler.OnlineMovieStoreOrder.model.Movie
 import com.dyurekdeler.OnlineMovieStoreOrder.model.OrderStatus
-import com.dyurekdeler.OnlineMovieStoreOrder.service.OrderService
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
@@ -15,7 +14,7 @@ data class Order(
     var customer: Customer,
     var movie: Movie,
     var quantity: Int,
-    var status: OrderStatus = OrderStatus.Created,
+    var status: OrderStatus? = OrderStatus.Created,
     val createdDate: LocalDateTime = LocalDateTime.now(),
     val modifiedDate: LocalDateTime = LocalDateTime.now()
 )

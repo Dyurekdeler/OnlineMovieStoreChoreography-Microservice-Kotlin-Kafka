@@ -23,8 +23,6 @@ class OrderController(
     private val kafkaService: KafkaService
 ) {
 
-
-
     @GetMapping("/{id}")
     fun getOrder(@PathVariable("id") id: String): ResponseEntity<Order> {
         val order = orderService.findById(id)

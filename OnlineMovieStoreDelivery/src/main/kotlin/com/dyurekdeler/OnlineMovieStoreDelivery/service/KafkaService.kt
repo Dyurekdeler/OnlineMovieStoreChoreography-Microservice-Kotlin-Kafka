@@ -1,6 +1,8 @@
 package com.dyurekdeler.OnlineMovieStoreDelivery.service
 
 import com.dyurekdeler.OnlineMovieStoreDelivery.model.DeliveryStatus
+import com.dyurekdeler.OnlineMovieStoreDelivery.model.kafka.DeliveryCompletedEvent
+import com.dyurekdeler.OnlineMovieStoreDelivery.model.kafka.DeliveryFailedEvent
 import com.dyurekdeler.OnlineMovieStoreDelivery.model.kafka.InventoryUpdatedEvent
 import com.dyurekdeler.OnlineMovieStoreDelivery.request.DeliveryRequest
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -28,12 +30,21 @@ class KafkaService(
         )
         deliveryService.createDelivery(deliveryRequest)
 
-        // maybe publish operation completed message to order ??
+        // inform order that order process completed
+        val deliveryCompletedEvent = DeliveryCompletedEvent(
+            event.order
+        )
+        postDeliveryCompletedEvent(deliveryCompletedEvent)
 
     }
 
-    fun postInventoryUpdatedEvent(inventoryUpdatedEvent: InventoryUpdatedEvent){
-        "inventory-events-topic".publish(inventoryUpdatedEvent)
+    fun postDeliveryCompletedEvent(deliveryCompletedEvent: DeliveryCompletedEvent){
+        "delivery-events-topic".publish(deliveryCompletedEvent)
+    }
+
+    // rollback scenario not binded to any controller or service yet
+    fun postDeliveryFailedEvent(deliveryFailedEvent: DeliveryFailedEvent){
+        "delivery-events-topic".publish(deliveryFailedEvent)
     }
 
     private fun String.publish(message: Any){
