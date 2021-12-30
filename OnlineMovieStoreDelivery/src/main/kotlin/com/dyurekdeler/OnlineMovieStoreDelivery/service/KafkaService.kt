@@ -29,6 +29,14 @@ class KafkaService(
         )
         deliveryService.createDelivery(deliveryRequest)
 
+        // successful placeOrder scenario
+        // deliveryCompleted(event)
+
+        // failed placeOrder scenario
+        deliveryFailed(event)
+    }
+
+    fun deliveryCompleted(event: InventoryUpdatedEvent){
         // assume some time has passed and delivery is delivered to the customer
         // ...
         // update delivery status to Delivered
@@ -39,7 +47,19 @@ class KafkaService(
         )
         postDeliveryCompletedEvent(deliveryCompletedEvent)
         logger.info("Delivery completed, informing order $deliveryCompletedEvent")
+    }
 
+    fun deliveryFailed(event: InventoryUpdatedEvent){
+        // assume some time has passed and delivery is not delivered
+        // ...
+        // update delivery status to Canceled
+
+        // all the steps taken must be rolled back as a chain
+        val deliveryFailedEvent = DeliveryFailedEvent(
+            event.order
+        )
+        postDeliveryFailedEvent(deliveryFailedEvent)
+        logger.info("Delivery failed, starting the rollback process $deliveryFailedEvent")
     }
 
     fun postDeliveryCompletedEvent(event: DeliveryCompletedEvent){
@@ -47,7 +67,7 @@ class KafkaService(
     }
 
     // rollback scenario manually triggered
-    fun postDeliveryFailedvent(event: DeliveryFailedEvent){
+    fun postDeliveryFailedEvent(event: DeliveryFailedEvent){
         "delivery_fails".publish(event)
     }
 

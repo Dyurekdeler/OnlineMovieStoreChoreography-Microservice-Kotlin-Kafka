@@ -23,14 +23,14 @@ class KafkaService(
     fun consumePaymentRefundedEvent(event: PaymentRefundedEvent)  {
         // cancel order if payment is refunded to customer
         orderService.updateOrderStatus(event.order.id!!, OrderStatus.Canceled)
-        logger.info(">>Order operation is canceled. Triggering event: $event")
+        logger.info(">>Order operation is canceled. Triggered event: $event")
     }
 
     @KafkaListener(topics= ["delivery_events"], groupId = "test_id")
     fun consumeDeliveryCompletedEvent(event: DeliveryCompletedEvent)  {
         // completed order
         orderService.updateOrderStatus(event.order.id!!, OrderStatus.Completed)
-        logger.info(">>Order operation is completed successfully. Triggering event: $event")
+        logger.info(">>Order operation is completed successfully. Triggered event: $event")
     }
 
     fun placeOrder(request: OrderRequest): Order {
