@@ -7,7 +7,6 @@ import com.dyurekdeler.OnlineMovieStoreDelivery.model.kafka.InventoryUpdatedEven
 import com.dyurekdeler.OnlineMovieStoreDelivery.request.DeliveryRequest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
@@ -20,8 +19,8 @@ class KafkaService(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @KafkaListener(topics= ["inventory-events-topic"], groupId = "test_id")
-    fun consumeMessage(event: InventoryUpdatedEvent)  {
+    @KafkaListener(topics= ["inventory_events"], groupId = "test_id")
+    fun consumeInventoryDecreasedEvent(event: InventoryUpdatedEvent)  {
 
         // insert delivery
         val deliveryRequest = DeliveryRequest(
@@ -30,21 +29,26 @@ class KafkaService(
         )
         deliveryService.createDelivery(deliveryRequest)
 
+        // assume some time has passed and delivery is delivered to the customer
+        // ...
+        // update delivery status to Delivered
+
         // inform order that order process completed
         val deliveryCompletedEvent = DeliveryCompletedEvent(
             event.order
         )
         postDeliveryCompletedEvent(deliveryCompletedEvent)
+        logger.info("Delivery completed, informing order $deliveryCompletedEvent")
 
     }
 
-    fun postDeliveryCompletedEvent(deliveryCompletedEvent: DeliveryCompletedEvent){
-        "delivery-events-topic".publish(deliveryCompletedEvent)
+    fun postDeliveryCompletedEvent(event: DeliveryCompletedEvent){
+        "delivery_events".publish(event)
     }
 
-    // rollback scenario not binded to any controller or service yet
-    fun postDeliveryFailedEvent(deliveryFailedEvent: DeliveryFailedEvent){
-        "delivery-events-topic".publish(deliveryFailedEvent)
+    // rollback scenario manually triggered
+    fun postDeliveryFailedvent(event: DeliveryFailedEvent){
+        "delivery_fails".publish(event)
     }
 
     private fun String.publish(message: Any){

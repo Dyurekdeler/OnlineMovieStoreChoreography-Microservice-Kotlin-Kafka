@@ -27,7 +27,6 @@ class DeliveryService(
                 status = request.status,
             )
         )
-        logger.info("Delivery created is $delivery")
         return delivery
     }
 

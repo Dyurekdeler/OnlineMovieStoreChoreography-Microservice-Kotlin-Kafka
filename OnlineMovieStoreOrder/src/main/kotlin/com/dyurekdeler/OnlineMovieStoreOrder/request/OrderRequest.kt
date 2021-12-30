@@ -8,5 +8,5 @@ class OrderRequest (
     val customerId: String,
     val quantity: Int,
     val paymentMethod: PaymentMethod,
-    var status: OrderStatus
+    var status: OrderStatus? = OrderStatus.Created
 )

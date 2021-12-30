@@ -1,8 +1,9 @@
 package com.dyurekdeler.OnlineMovieStoreOrder.service
 
+import com.dyurekdeler.OnlineMovieStoreOrder.entity.Order
+import com.dyurekdeler.OnlineMovieStoreOrder.model.kafka.OrderCreatedEvent
 import com.dyurekdeler.OnlineMovieStoreOrder.model.OrderStatus
 import com.dyurekdeler.OnlineMovieStoreOrder.model.kafka.*
-import com.dyurekdeler.OnlineMovieStoreOrder.repository.OrderRepository
 import com.dyurekdeler.OnlineMovieStoreOrder.request.OrderRequest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
@@ -18,40 +19,34 @@ class KafkaService(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    /**** test methods ****/
-
-    @KafkaListener(topics= ["test_topic"], groupId = "test_id")
-    fun consumeTestMessage(message: String)  {
-        logger.info("Deniz message received from test topic : $message")
-    }
-
-    fun produceTestMessage(message: String) {
-        "test_topic".publish(message)
-    }
-
-    /*** actual methods ****/
-
-    fun postOrderCreatedEvent(orderCreatedEvent: OrderCreatedEvent){
-        "order-events-topic".publish(orderCreatedEvent)
-    }
-
-    @KafkaListener(topics= ["inventory-events-topic"], groupId = "test_id")
-    fun consumeMessage(event: NotEnoughQuantityEvent)  {
-        // cancel order due fail
+    @KafkaListener(topics= ["payment_fails"], groupId = "test_id")
+    fun consumePaymentRefundedEvent(event: PaymentRefundedEvent)  {
+        // cancel order if payment is refunded to customer
         orderService.updateOrderStatus(event.order.id!!, OrderStatus.Canceled)
-
+        logger.info(">>Order operation is canceled. Triggering event: $event")
     }
 
-    @KafkaListener(topics= ["payment-events-topic"], groupId = "test_id")
-    fun consumeMessage(event: PaymentCanceledEvent)  {
-        // cancel order due fail
-        orderService.updateOrderStatus(event.order.id!!, OrderStatus.Canceled)
-    }
-
-    @KafkaListener(topics= ["delivery-events-topic"], groupId = "test_id")
-    fun consumeDeliveryCompletedMessage(event: PaymentCanceledEvent)  {
+    @KafkaListener(topics= ["delivery_events"], groupId = "test_id")
+    fun consumeDeliveryCompletedEvent(event: DeliveryCompletedEvent)  {
         // completed order
         orderService.updateOrderStatus(event.order.id!!, OrderStatus.Completed)
+        logger.info(">>Order operation is completed successfully. Triggering event: $event")
+    }
+
+    fun placeOrder(request: OrderRequest): Order {
+        val order = orderService.createOrder(request)
+        val orderCreatedEvent = OrderCreatedEvent(
+            order,
+            request.paymentMethod
+        )
+
+        postOrderCreatedEvent(orderCreatedEvent)
+        logger.info(">> Order created and event sent. ${orderCreatedEvent}")
+        return order
+    }
+
+    fun postOrderCreatedEvent(orderCreatedEvent: OrderCreatedEvent){
+        "order_events".publish(orderCreatedEvent)
     }
 
     private fun String.publish(message: Any){

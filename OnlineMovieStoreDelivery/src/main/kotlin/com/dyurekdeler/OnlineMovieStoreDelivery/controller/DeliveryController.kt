@@ -3,12 +3,13 @@ package com.dyurekdeler.OnlineMovieStoreDelivery.controller
 import com.dyurekdeler.OnlineMovieStoreDelivery.entity.Delivery
 import com.dyurekdeler.OnlineMovieStoreDelivery.request.DeliveryRequest
 import com.dyurekdeler.OnlineMovieStoreDelivery.service.DeliveryService
+import com.dyurekdeler.OnlineMovieStoreDelivery.service.KafkaService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class DeliveryController(
-    private val deliveryService: DeliveryService
+    private val deliveryService: DeliveryService,
 ) {
 
     @GetMapping("/{id}")

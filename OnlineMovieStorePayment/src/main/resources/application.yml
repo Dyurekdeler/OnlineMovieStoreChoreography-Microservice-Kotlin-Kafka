@@ -4,6 +4,17 @@ spring:
   application:
     name: "OnlineMovieStorePayment"
 
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.dyurekdeler.OnlineMovieStorePayment.serializer.KafkaModelDeserializer
+
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
+
 eureka:
   client:
     healthcheck:

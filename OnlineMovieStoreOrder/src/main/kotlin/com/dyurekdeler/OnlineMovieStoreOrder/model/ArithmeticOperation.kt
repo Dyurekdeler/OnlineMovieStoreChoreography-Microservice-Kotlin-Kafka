@@ -1,4 +1,4 @@
-package com.dyurekdeler.OnlineMovieStoreDelivery.model
+package com.dyurekdeler.OnlineMovieStoreOrder.model
 
 enum class ArithmeticOperation {
     Subtraction,

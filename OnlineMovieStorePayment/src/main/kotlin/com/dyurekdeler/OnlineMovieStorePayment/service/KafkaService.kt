@@ -18,9 +18,8 @@ class KafkaService(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @KafkaListener(topics= ["order-events-topic"], groupId = "test_id")
-    fun consumeEvent(event: OrderCreatedEvent)  {
-        logger.info("Deniz message received from payment topic : $event")
+    @KafkaListener(topics= ["order_events"], groupId = "test_id")
+    fun consumeOrderCreatedEvent(event: OrderCreatedEvent)  {
 
         // insert payment
         val paymentRequest = PaymentRequest(
@@ -30,18 +29,15 @@ class KafkaService(
         )
         paymentService.createPayment(paymentRequest)
 
-        // publish ready msg to inventory update
         val paymentCreatedEvent = PaymentCreatedEvent(
             event.order
         )
         postPaymentCreatedEvent(paymentCreatedEvent)
-
+        logger.info(">>Payment created and publishing event. $paymentCreatedEvent")
     }
 
-    @KafkaListener(topics= ["inventory-events-topic"], groupId = "test_id")
-    fun consumeInventoryUpdatedEvent(event: InventoryUpdatedEvent)  {
-        logger.info("Deniz message received from payment topic : $event")
-
+    @KafkaListener(topics= ["inventory_fails"], groupId = "test_id")
+    fun consumeInventoryIncreasedEvent(event: InventoryUpdatedEvent)  {
         // inventory restored means payment must be refunded to customer
         // update payment status to canceled
         // first find the payment
@@ -51,24 +47,22 @@ class KafkaService(
             paymentService.updatePaymentStatus(it, isCancelled = true)
         }
 
-        // payment refund operation means order is canceled
-        // payment failed event === payment canceled event
-        val paymentFailedEvent = PaymentCanceledEvent(
+        val paymentRefundedEvent = PaymentRefundedEvent(
             event.order
         )
-        postPaymentFailedEvent(paymentFailedEvent)
+        postPaymentRefundedEvent(paymentRefundedEvent)
+        logger.info(">>Payment is refunded due inventory rollback. Publishing event. $paymentRefundedEvent")
+
 
     }
 
-    fun postPaymentCreatedEvent(paymentCreatedEvent: PaymentCreatedEvent){
-        "payment-events-topic".publish(paymentCreatedEvent)
+    fun postPaymentCreatedEvent(event: PaymentCreatedEvent){
+        "payment_events".publish(event)
     }
 
-    // this rollback scenario is not binded to any contoller or service yet
-    fun postPaymentFailedEvent(paymentCanceledEvent: PaymentCanceledEvent){
-        "payment-events-topic".publish(paymentCanceledEvent)
+    fun postPaymentRefundedEvent(event: PaymentRefundedEvent){
+        "payment_fails".publish(event)
     }
-
 
     private fun String.publish(message: Any){
         kafkaTemplate.send(ProducerRecord(this, message))

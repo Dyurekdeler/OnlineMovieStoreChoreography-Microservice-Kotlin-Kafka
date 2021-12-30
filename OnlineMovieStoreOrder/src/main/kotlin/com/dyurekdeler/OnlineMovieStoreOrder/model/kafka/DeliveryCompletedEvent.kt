@@ -2,6 +2,6 @@ package com.dyurekdeler.OnlineMovieStoreOrder.model.kafka
 
 import com.dyurekdeler.OnlineMovieStoreOrder.entity.Order
 
-data class NotEnoughQuantityEvent(
+data class DeliveryCompletedEvent(
     val order: Order
 )

@@ -4,7 +4,6 @@ import com.dyurekdeler.OnlineMovieStoreOrder.client.CustomerClient
 import com.dyurekdeler.OnlineMovieStoreOrder.client.InventoryClient
 import com.dyurekdeler.OnlineMovieStoreOrder.entity.Order
 import com.dyurekdeler.OnlineMovieStoreOrder.model.*
-import com.dyurekdeler.OnlineMovieStoreOrder.model.kafka.OrderCreatedEvent
 import com.dyurekdeler.OnlineMovieStoreOrder.repository.OrderRepository
 import com.dyurekdeler.OnlineMovieStoreOrder.request.OrderRequest
 import org.slf4j.LoggerFactory
@@ -14,8 +13,7 @@ import org.springframework.stereotype.Service
 class OrderService(
     private val orderRepository: OrderRepository,
     private val customerClient: CustomerClient,
-    private val inventoryClient: InventoryClient,
-    private val kafkaService: KafkaService
+    private val inventoryClient: InventoryClient
 
 ) {
 
@@ -67,19 +65,7 @@ class OrderService(
         orderRepository.delete(orderToDelete)
     }
 
-    fun placeOrder(request: OrderRequest): Order{
-        val order = createOrder(request)
-        logger.info(">> Inserting order. Order: $order")
 
-        val orderCreatedEvent = OrderCreatedEvent(
-            order,
-            request.paymentMethod
-        )
-
-        kafkaService.postOrderCreatedEvent(orderCreatedEvent)
-        logger.info(">> Kafka message is sent")
-        return order
-    }
 
     fun cancelOrder(order: Order): Order {
         order.status = OrderStatus.Canceled

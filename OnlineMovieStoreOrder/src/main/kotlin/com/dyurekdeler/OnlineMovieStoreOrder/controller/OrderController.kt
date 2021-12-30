@@ -31,7 +31,7 @@ class OrderController(
 
     @PostMapping("/placeOrder")
     fun placeOrder(@RequestBody request: OrderRequest): ResponseEntity<Order> {
-        val order = orderService.placeOrder(request)
+        val order = kafkaService.placeOrder(request)
         return ResponseEntity(order, HttpStatus.CREATED)
     }
 
@@ -45,27 +45,5 @@ class OrderController(
     fun deleteOrder(@PathVariable("id") id: String) {
         orderService.deleteById(id)
     }
-
-
-    @PostMapping("/produce")
-    fun produceMessage(@RequestBody message : String) : ResponseEntity<String> {
-        /*
-        val topic:String = "test_topic"
-        var producerRecord : ProducerRecord<String, String> = ProducerRecord(topic, message)
-        val map = mutableMapOf<String, String>()
-        map["key.serializer"]   = "org.apache.kafka.common.serialization.StringSerializer"
-        map["value.serializer"] = "org.apache.kafka.common.serialization.StringSerializer"
-        map["bootstrap.servers"] = "localhost:9092"
-        var producer = KafkaProducer<String, String>(map as Map<String, Any>?)
-        var future: Future<RecordMetadata> = producer?.send(producerRecord)!!
-        return ResponseEntity.ok(" message sent to " + future.get().topic())
-         */
-        kafkaService.produceTestMessage(message)
-        return ResponseEntity.ok(" message sent to test topic")
-    }
-
-
-
-
 
 }

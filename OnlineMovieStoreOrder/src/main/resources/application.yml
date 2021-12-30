@@ -4,6 +4,15 @@ spring:
   application:
     name: "OnlineMovieStoreOrder"
 
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.dyurekdeler.OnlineMovieStoreOrder.serializer.KafkaModelDeserializer
+
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 eureka:
   client:
     healthcheck:
@@ -36,3 +45,4 @@ OnlineMovieStore:
       url: "http://localhost:8085/api/deliveries"
       ws:
         createDelivery: /
+
